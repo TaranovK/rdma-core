@@ -53,6 +53,7 @@ rdma_man_pages(
   rdma_reg_msgs.3
   rdma_reg_read.3
   rdma_reg_write.3
+  rdma_reg_null.3
   rdma_reject.3
   rdma_resolve_addr.3
   rdma_resolve_route.3

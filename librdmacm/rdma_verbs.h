@@ -84,6 +84,12 @@ rdma_reg_write(struct rdma_cm_id *id, void *addr, size_t length)
 						IBV_ACCESS_REMOTE_WRITE);
 }
 
+static inline struct ibv_mr *
+rdma_reg_null(struct rdma_cm_id *id)
+{
+	return ibv_alloc_null_mr(id->pd);
+}
+
 static inline int
 rdma_dereg_mr(struct ibv_mr *mr)
 {

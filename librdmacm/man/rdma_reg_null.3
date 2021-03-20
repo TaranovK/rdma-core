@@ -1,0 +1,32 @@
+.\" Licensed under the OpenIB.org BSD license (FreeBSD Variant) - See COPYING.md
+.TH "RDMA_REG_NULL" 3 "2021-03-20" "librdmacm" "Librdmacm Programmer's Manual" librdmacm
+.SH NAME
+rdma_reg_null \- allocates a null memory region (MR) for sending or receiving messages.
+.SH SYNOPSIS
+.B "#include <rdma/rdma_verbs.h>"
+.P
+.B "struct ibv_mr *" rdma_reg_null
+.BI "(struct rdma_cm_id *" id ");"
+.SH ARGUMENTS
+.IP "id" 12
+A reference to a communication identifier where the null memory region
+will be allocated.
+.SH "DESCRIPTION"
+Allocates a null memory region used for sending and receiving messages. The null 
+memory may be posted to an rdma_cm_id using rdma_post_send or rdma_post_recv. 
+A device should implement the null MR in a way that bypasses PCI transfers, 
+internally discarding or sourcing 0 data.
+.SH "RETURN VALUE"
+Returns a reference to the allocated null memory region on success, or NULL on
+error.  If an error occurs, errno will be set to indicate the failure reason.
+.SH "NOTES"
+rdma_reg_null is used to discard all data written to it, and always returns 0 on
+read. It has the maximum length and only the lkey is valid, the MR is not
+exposed as an rkey.
+.P
+Users must deregister all allocated null memory regions by calling rdma_dereg_mr.
+.SH "SEE ALSO"
+rdma_cm(7), rdma_create_id(3), rdma_create_ep(3),
+rdma_reg_read(3), rdma_reg_write(3),
+ibv_alloc_null_mr(3), ibv_dereg_mr(3), rdma_post_send(3), rdma_post_recv(3),
+rdma_post_read(3), rdma_post_readv(3), rdma_post_write(3), rdma_post_writev(3)
