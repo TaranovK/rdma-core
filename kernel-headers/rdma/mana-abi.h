@@ -20,6 +20,17 @@ struct mana_ib_create_cq {
 	__aligned_u64 buf_addr;
 };
 
+struct mana_ib_create_cq_ex {
+	__aligned_u64 buf_addr;
+	__u32 buf_size;
+	__u32 reserved;
+};
+
+struct mana_ib_create_cq_ex_resp {
+	__u32 cqid;
+	__u32 reserved;
+};
+
 struct mana_ib_create_qp {
 	__aligned_u64 sq_buf_addr;
 	__u32 sq_buf_size;

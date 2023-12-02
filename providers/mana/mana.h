@@ -47,10 +47,15 @@ static inline int get_wqe_size(int sge)
 	return align(wqe_size, GDMA_WQE_ALIGNMENT_UNIT_SIZE);
 }
 
+enum mana_ctx_flags {
+	MANA_CTX_FLAG_FORCE_RNIC = 1,
+};
+
 struct mana_context {
 	struct verbs_context ibv_ctx;
 	struct manadv_ctx_allocators extern_alloc;
 	void *db_page;
+	uint32_t flags;
 };
 
 struct mana_rwq_ind_table {
@@ -85,10 +90,10 @@ struct mana_wq {
 };
 
 struct mana_cq {
-	struct ibv_cq ibcq;
+	struct verbs_cq ibcq;
 	uint32_t cqe;
 	void *buf;
-
+	uint32_t buf_size;
 	uint32_t cqid;
 };
 
@@ -132,6 +137,8 @@ struct ibv_cq *mana_create_cq(struct ibv_context *context, int cqe,
 			      int comp_vector);
 
 int mana_destroy_cq(struct ibv_cq *cq);
+
+int mana_poll_cq(struct ibv_cq *ibcq, int nwc, struct ibv_wc *wc);
 
 struct ibv_wq *mana_create_wq(struct ibv_context *context,
 			      struct ibv_wq_init_attr *attr);

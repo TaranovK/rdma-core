@@ -31,6 +31,10 @@ int manadv_set_context_attr(struct ibv_context *ibv_ctx,
 		ctx->extern_alloc = *((struct manadv_ctx_allocators *)attr);
 		ret = 0;
 		break;
+	case MANADV_CTX_ATTR_FORCE_RNIC:
+		ctx->flags |= MANA_CTX_FLAG_FORCE_RNIC;
+		ret = 0;
+		break;
 	default:
 		verbs_err(verbs_get_ctx(ibv_ctx),
 			  "Unsupported context type %d\n", type);
@@ -63,7 +67,7 @@ int manadv_init_obj(struct manadv_obj *obj, uint64_t obj_type)
 
 	if (obj_type & MANADV_OBJ_CQ) {
 		struct ibv_cq *ibcq = obj->cq.in;
-		struct mana_cq *cq = container_of(ibcq, struct mana_cq, ibcq);
+		struct mana_cq *cq = container_of(ibcq, struct mana_cq, ibcq.cq);
 
 		obj->cq.out->buf = cq->buf;
 		obj->cq.out->count = cq->cqe;

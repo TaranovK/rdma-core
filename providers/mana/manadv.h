@@ -18,6 +18,7 @@ extern "C" {
 enum manadv_set_ctx_attr_type {
 	/* Attribute type uint8_t */
 	MANADV_CTX_ATTR_BUF_ALLOCATORS = 0,
+	MANADV_CTX_ATTR_FORCE_RNIC = 1,
 };
 
 struct manadv_ctx_allocators {

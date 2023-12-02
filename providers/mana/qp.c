@@ -54,7 +54,7 @@ static struct ibv_qp *mana_create_qp_raw(struct ibv_pd *ibpd,
 	mpd = container_of(pd, struct mana_parent_domain, mpd);
 	port = (uint32_t)(uintptr_t)mpd->pd_context;
 
-	cq = container_of(attr->send_cq, struct mana_cq, ibcq);
+	cq = container_of(attr->send_cq, struct mana_cq, ibcq.cq);
 
 	if (!ctx->extern_alloc.alloc || !ctx->extern_alloc.free) {
 		verbs_err(verbs_get_ctx(ibpd->context),
@@ -221,7 +221,7 @@ static struct ibv_qp *mana_create_qp_ex_raw(struct ibv_context *context,
 			struct mana_wq *wq = container_of(ind_table->ind_tbl[i],
 							  struct mana_wq, ibwq);
 			struct mana_cq *cq =
-				container_of(wq->ibwq.cq, struct mana_cq, ibcq);
+				container_of(wq->ibwq.cq, struct mana_cq, ibcq.cq);
 			wq->wqid = cmd_resp->entries[i].wqid;
 			cq->cqid = cmd_resp->entries[i].cqid;
 		}
