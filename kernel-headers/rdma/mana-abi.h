@@ -30,6 +30,14 @@ struct mana_ib_create_cq_ex_resp {
 	__u32 cqid;
 	__u32 reserved;
 };
+struct mana_ib_create_rc_qp {
+	__aligned_u64 queue_addrs[4];
+	__u32 queue_sizes[4];
+};
+
+struct mana_ib_create_rc_qp_resp {
+	__u32 queue_ids[4];
+};
 
 struct mana_ib_create_qp {
 	__aligned_u64 sq_buf_addr;

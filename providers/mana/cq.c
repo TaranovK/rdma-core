@@ -139,7 +139,7 @@ struct ibv_cq *mana_create_cq(struct ibv_context *context, int cqe,
 int mana_destroy_cq(struct ibv_cq *ibcq)
 {
 	int ret;
-	struct mana_cq *cq = container_of(ibcq, struct mana_cq, ibcq.cq);
+	struct mana_cq *cq = to_mana_cq(ibcq);
 	struct mana_context *ctx = to_mctx(ibcq->context);
 
 	ret = ibv_cmd_destroy_cq(ibcq);

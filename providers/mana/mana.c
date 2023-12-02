@@ -290,6 +290,11 @@ static struct verbs_context *mana_alloc_context(struct ibv_device *ibdev,
 	verbs_debug(&context->ibv_ctx, "Mapped db_page=%p\n", context->db_page);
 
 	context->flags = 0;
+	context->lookup_table = malloc(sizeof(struct mana_qp) * 1024);
+	if (!context->lookup_table) {
+		errno = ENOMEM;
+		goto free_ctx;
+	}
 
 	return &context->ibv_ctx;
 

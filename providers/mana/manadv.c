@@ -57,17 +57,17 @@ int manadv_init_obj(struct manadv_obj *obj, uint64_t obj_type)
 		struct ibv_context *context = ibqp->context;
 		struct mana_context *ctx = to_mctx(context);
 
-		obj->qp.out->sq_buf = qp->send_buf;
-		obj->qp.out->sq_count = qp->send_wqe_count;
-		obj->qp.out->sq_size = qp->send_buf_size;
-		obj->qp.out->sq_id = qp->sqid;
-		obj->qp.out->tx_vp_offset = qp->tx_vp_offset;
+		obj->qp.out->sq_buf = qp->raw_qp.send_buf;
+		obj->qp.out->sq_count = qp->raw_qp.send_wqe_count;
+		obj->qp.out->sq_size = qp->raw_qp.send_buf_size;
+		obj->qp.out->sq_id = qp->raw_qp.sqid;
+		obj->qp.out->tx_vp_offset = qp->raw_qp.tx_vp_offset;
 		obj->qp.out->db_page = ctx->db_page;
 	}
 
 	if (obj_type & MANADV_OBJ_CQ) {
 		struct ibv_cq *ibcq = obj->cq.in;
-		struct mana_cq *cq = container_of(ibcq, struct mana_cq, ibcq.cq);
+		struct mana_cq *cq = to_mana_cq(ibcq);
 
 		obj->cq.out->buf = cq->buf;
 		obj->cq.out->count = cq->cqe;
