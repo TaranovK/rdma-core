@@ -281,9 +281,9 @@ static void fill_verbs_from_shadow_wqe(struct mana_qp *qp, struct ibv_wc *wc,
 	const struct rc_rq_shadow_wqe *rc_wqe = (const struct rc_rq_shadow_wqe *)shadow_wqe;
 
 	wc->wr_id = shadow_wqe->wr_id;
-	wc->status = IBV_WC_SUCCESS;
+	wc->status = shadow_wqe->vendor_error_code;
 	wc->opcode = shadow_wqe->opcode;
-	wc->vendor_err = 0;
+	wc->vendor_err = shadow_wqe->vendor_error_code;
 	wc->wc_flags = shadow_wqe->flags;
 	wc->qp_num = qp->ibqp.qp.qp_num;
 	wc->pkey_index = 0;
@@ -332,6 +332,39 @@ out:
 	return wc_index;
 }
 
+static int mana_error_completions(struct mana_cq *cq)
+{
+	struct shadow_wqe_header *shadow_wqe;
+	struct mana_qp *qp;
+	int completed = 0;
+
+	/* process send shadow queue completions  */
+	list_for_each(&cq->send_qp_list, qp, send_cq_node) {
+		if (qp->ibqp.qp.state != IBV_QPS_ERR)
+			continue;
+		while ((shadow_wqe = shadow_queue_get_next_to_complete(&qp->shadow_sq))
+				!= NULL) {
+			shadow_wqe->vendor_error_code = IBV_WC_GENERAL_ERR;
+			shadow_queue_advance_next_to_complete(&qp->shadow_sq);
+			completed++;
+		}
+	}
+
+	/* process recv shadow queue completions */
+	list_for_each(&cq->recv_qp_list, qp, recv_cq_node) {
+		if (qp->ibqp.qp.state != IBV_QPS_ERR)
+			continue;
+		while ((shadow_wqe = shadow_queue_get_next_to_complete(&qp->shadow_rq))
+				!= NULL) {
+			shadow_wqe->vendor_error_code = IBV_WC_GENERAL_ERR;
+			shadow_queue_advance_next_to_complete(&qp->shadow_rq);
+			completed++;
+		}
+	}
+
+	return completed;
+}
+
 int mana_poll_cq(struct ibv_cq *ibcq, int nwc, struct ibv_wc *wc)
 {
 	struct mana_cq *cq = container_of(ibcq, struct mana_cq, ibcq);
@@ -352,6 +385,8 @@ int mana_poll_cq(struct ibv_cq *ibcq, int nwc, struct ibv_wc *wc)
 			break;
 		cq->ready_wcs += mana_handle_cqe(ctx, &gdma_cqe);
 	}
+
+	cq->ready_wcs += mana_error_completions(cq);
 
 	num_polled = mana_process_completions(cq, nwc, wc);
 	cq->ready_wcs -= num_polled;

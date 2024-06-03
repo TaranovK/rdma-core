@@ -216,8 +216,37 @@ static void mana_free_context(struct ibv_context *ibctx)
 	free(context);
 }
 
+static void mana_async_event(struct ibv_context *context,
+			     struct ibv_async_event *event)
+{
+	struct ibv_qp *ibvqp;
+
+	switch (event->event_type) {
+	case IBV_EVENT_QP_FATAL:
+	case IBV_EVENT_QP_REQ_ERR:
+	case IBV_EVENT_QP_ACCESS_ERR:
+	case IBV_EVENT_PATH_MIG_ERR: {
+		ibvqp = event->element.qp;
+		mana_qp_move_flush_err(ibvqp);
+		break;
+	}
+	case IBV_EVENT_CQ_ERR:
+	case IBV_EVENT_SRQ_ERR:
+	case IBV_EVENT_SQ_DRAINED:
+	case IBV_EVENT_PATH_MIG:
+	case IBV_EVENT_COMM_EST:
+	case IBV_EVENT_QP_LAST_WQE_REACHED:
+	case IBV_EVENT_SRQ_LIMIT_REACHED:
+	case IBV_EVENT_PORT_ACTIVE:
+	case IBV_EVENT_PORT_ERR:
+	default:
+		break;
+	}
+}
+
 static const struct verbs_context_ops mana_ctx_ops = {
 	.alloc_pd = mana_alloc_pd,
+	.async_event = mana_async_event,
 	.alloc_parent_domain = mana_alloc_parent_domain,
 	.create_cq = mana_create_cq,
 	.create_qp = mana_create_qp,

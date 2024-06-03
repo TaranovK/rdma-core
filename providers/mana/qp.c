@@ -340,6 +340,9 @@ static void mana_ib_modify_rc_qp(struct mana_qp *qp, struct ibv_qp_attr *attr, i
 	if (attr_mask & IBV_QP_PATH_MTU)
 		qp->mtu = attr->path_mtu;
 
+	if (attr_mask & IBV_QP_STATE)
+		qp->ibqp.qp.state = attr->qp_state;
+
 	switch (attr->qp_state) {
 	case IBV_QPS_RESET:
 	case IBV_QPS_INIT:
@@ -537,4 +540,12 @@ struct ibv_qp *mana_create_qp_ex(struct ibv_context *context,
 	}
 
 	return NULL;
+}
+
+void mana_qp_move_flush_err(struct ibv_qp *ibqp)
+{
+	struct ibv_qp_attr attr = {};
+
+	attr.qp_state = IBV_QPS_ERR;
+	mana_modify_qp(ibqp, &attr, IBV_QP_STATE);
 }

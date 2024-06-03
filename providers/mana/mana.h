@@ -240,4 +240,6 @@ int mana_post_send(struct ibv_qp *ibqp, struct ibv_send_wr *wr,
 int mana_arm_cq(struct ibv_cq *ibcq, int solicited);
 
 struct mana_qp *mana_get_qp_from_rq(struct mana_context *ctx, uint32_t qpn);
+
+void mana_qp_move_flush_err(struct ibv_qp *ibqp);
 #endif
