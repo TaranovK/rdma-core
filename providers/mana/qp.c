@@ -541,3 +541,12 @@ struct ibv_qp *mana_create_qp_ex(struct ibv_context *context,
 
 	return NULL;
 }
+
+int mana_query_qp(struct ibv_qp *ibqp, struct ibv_qp_attr *attr, int attr_mask,
+		  struct ibv_qp_init_attr *init_attr)
+{
+	attr->cap.max_inline_data = 0;
+	init_attr->cap.max_inline_data = 0;
+
+	return 0;
+}

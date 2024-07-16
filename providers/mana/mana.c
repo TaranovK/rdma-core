@@ -236,6 +236,7 @@ static const struct verbs_context_ops mana_ctx_ops = {
 	.post_send = mana_post_send,
 	.query_device_ex = mana_query_device_ex,
 	.query_port = mana_query_port,
+	.query_qp = mana_query_qp,
 	.reg_mr = mana_reg_mr,
 	.req_notify_cq = mana_arm_cq,
 };

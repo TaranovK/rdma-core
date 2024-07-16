@@ -241,4 +241,7 @@ int mana_post_send(struct ibv_qp *ibqp, struct ibv_send_wr *wr,
 int mana_arm_cq(struct ibv_cq *ibcq, int solicited);
 
 struct mana_qp *mana_get_qp_from_rq(struct mana_context *ctx, uint32_t qpn);
+
+int mana_query_qp(struct ibv_qp *ibqp, struct ibv_qp_attr *attr, int attr_mask,
+		  struct ibv_qp_init_attr *init_attr);
 #endif
